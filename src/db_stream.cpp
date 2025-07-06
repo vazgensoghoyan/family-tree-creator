@@ -9,6 +9,8 @@ database::DbStream::DbStream(std::string db_name) {
 
     if (result != SQLITE_OK)
         throw std::runtime_error("Ошибка открытия БД");
+
+    read_tables_names();
 }
 
 database::DbStream::~DbStream() {
@@ -45,22 +47,79 @@ void database::DbStream::dropTable(std::string table_name, bool ifExists) {
     tables_.erase(table_name);
 }
 
+const database::Table* database::DbStream::get_table(std::string table_name) const {
+
+    // TODO
+
+}
+
 // DbStream private methods
 
 void database::DbStream::read_tables_names() {
+    sqlite3_stmt* stmt;
+    
+    const char* sql = "SELECT name FROM sqlite_master "
+                      "WHERE type='table' AND name NOT LIKE 'sqlite_%';";
+    
+    if (sqlite3_prepare_v2(db_, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        return;
+    }
+    
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        const unsigned char* txt = sqlite3_column_text(stmt, 0);
 
-    // TODO
+        const char* table_name = reinterpret_cast<const char*>(table_name);
 
+        if (table_name) {
+            tables_.insert({ std::string(table_name), nullptr });
+        }
+    }
+    
+    sqlite3_finalize(stmt);
 }
 
 std::string database::DbStream::format_create_expr(Table* table, bool ifNotExists) {
+    std::stringstream ss;
+    ss << "CREATE TABLE ";
+    if (ifNotExists) ss << "IF NOT EXISTS ";
+    ss << table->name << " (\n";
 
-    // TODO
+    const auto& schema = table->schema->column_infos;
 
+    for ( size_t i = 0;i < schema.size(); ++i ) {
+        const auto& col = schema[i];
+
+        // Имя столбца и тип
+        ss << "    " << col.name << " " << col.type;
+        
+        // Обработка NULL/NOT NULL
+        if (!col.isNullable) {
+            ss << " NOT NULL";
+        }
+        
+        // Обработка значения по умолчанию
+        if (col.defValue.isSpecified) {
+            if (col.defValue.isNull) {
+                ss << " DEFAULT NULL";
+            } else {
+                ss << " DEFAULT " << col.defValue.value;
+            }
+        }
+        
+        // Запятая для всех, кроме последнего столбца
+        if (i < schema.size() - 1) 
+            ss << ",";
+        ss << "\n";
+    }
+    
+    ss << ");";
+    return ss.str();
 }
 
 std::string database::DbStream::format_drop_expr(std::string table_name, bool ifExists) {
-
-    // TODO
-
+    std::stringstream ss;
+    ss << "DROP TABLE ";
+    if (ifExists) ss << "IF EXISTS ";
+    ss << table_name << " ";
+    return ss.str();
 }

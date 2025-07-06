@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <db_table.hpp>
 #include <stdexcept>
+#include <sstream>
 
 namespace database {
 
@@ -17,6 +18,8 @@ public:
 
     void createTable(std::string table_name, TableSchema* schema, bool ifNotExists = false);
     void dropTable(std::string table_name, bool ifExists = false);
+
+    const Table* get_table(std::string table_name) const;
 
 private:
     void read_tables_names();

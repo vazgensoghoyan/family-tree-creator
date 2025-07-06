@@ -10,12 +10,12 @@ namespace database {
 class TableSchema {
 
 public:
-    TableSchema(std::vector<ColumnInfo> schema) : schema(schema) { }
+    TableSchema(std::vector<ColumnInfo> columns) : column_infos(columns) { }
 
     ~TableSchema() { }
 
 public:
-    const std::vector<ColumnInfo> schema;
+    const std::vector<ColumnInfo> column_infos;
 
 };
 
