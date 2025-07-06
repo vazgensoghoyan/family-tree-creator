@@ -3,26 +3,30 @@
 
 #include <sqlite3.h>
 #include <string>
-#include <unordered_set>
-#include <db_table_schema.hpp>
+#include <unordered_map>
+#include <db_table.hpp>
+#include <stdexcept>
 
 namespace database {
 
-class DatabaseStream {
+class DbStream {
 
 public:
-    DatabaseStream(std::string db_name);            // db opens, reads tables names
-    ~DatabaseStream();                              // db closes
+    DbStream(std::string db_name);          // db opens, reads tables names
+    ~DbStream();                            // db closes
 
-    void createTable(DatabaseTableSchema* schema);  // both understandable
-    void dropTable(std::string table_name);         // 
+    void createTable(std::string table_name, TableSchema* schema, bool ifNotExists = false);
+    void dropTable(std::string table_name, bool ifExists = false);
 
 private:
     void read_tables_names();
+    std::string format_create_expr(Table* table, bool ifNotExists);
+    std::string format_drop_expr(std::string table_name, bool ifExists);
 
 private:
-    sqlite3* _db;
-    std::unordered_set<std::string> tables_names_;
+    sqlite3* db_;
+    std::unordered_map<std::string, Table*> tables_;
+
 };
 
 }

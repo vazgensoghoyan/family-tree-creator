@@ -6,17 +6,21 @@
 
 namespace database {
 
-class DatabaseTable {
+class Table {
     
 public:
-    explicit DatabaseTable(DatabaseTableSchema* schema);
-    ~DatabaseTable();
+    Table(std::string name, TableSchema* schema) : name(name), schema(schema) { }
+    
+    ~Table() { }
 
-    void insertValues(std::string* values);
+    void insertValues(std::string* row);
 
-private:
-    DatabaseTableSchema* schema_;
-    std::string** values_;
+    const auto& getValues() const { return rows; }
+
+public:
+    const std::string name;
+    const TableSchema* schema;
+    const std::vector<std::vector<std::string>> rows;
 
 };
 
