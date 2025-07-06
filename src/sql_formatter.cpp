@@ -6,18 +6,20 @@ std::string database::sql::SqlFormatter::format_create_expr(data::Table* table, 
     std::stringstream ss;
     ss << "CREATE TABLE ";
     if (ifNotExists) ss << "IF NOT EXISTS ";
-    ss << table->name << " (\n";
+    ss << table->name << " (";
 
     const auto& schema = table->schema->column_infos;
 
     for ( size_t i = 0;i < schema.size(); ++i ) {
         const auto& col = schema[i];
 
-        ss << "    " << col.name << " " << col.type;
+        ss << col.name << " " << col.type;
         
-        if (!col.isNullable) {
+        if (!col.isNullable && !col.isPKey)
             ss << " NOT NULL";
-        }
+
+        if (col.isPKey)
+            ss << " PRIMARY KEY";
         
         if (col.defValue.isSpecified) {
             if (col.defValue.isNull) {
@@ -28,8 +30,7 @@ std::string database::sql::SqlFormatter::format_create_expr(data::Table* table, 
         }
         
         if (i < schema.size() - 1) 
-            ss << ",";
-        ss << "\n";
+            ss << ", ";
     }
     
     ss << ");";

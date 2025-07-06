@@ -11,6 +11,26 @@
 
 namespace database {
 
+
+/*
+  * 
+ * DbStream db( "test.db" );
+ * 
+ * db.createTable( "people", TableSchema( std::vector<ColumnInfo> {
+ *      {...},
+ *      {...},
+ *      {...}
+ * } ) );
+ * 
+ * db.insertInto( "people", { "...", "...", ... } );
+ * 
+ * 
+ * db.dropTable( "table_name" );
+ * db.dropTable( "other_table", true/false );
+ * 
+*/
+
+
 class DbStream {
 
 public:
