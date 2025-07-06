@@ -1,18 +1,21 @@
 #ifndef _DB_TABLE_SCHEMA_HPP_
 #define _DB_TABLE_SCHEMA_HPP_
 
-#include <string>
+#include <vector>
+#include <exception>
+#include <db_column_info.hpp>
 
 namespace database {
 
-class DatabaseTableSchema {
+class TableSchema {
 
 public:
-    explicit DatabaseTableSchema(std::string* schema);
-    ~DatabaseTableSchema();
+    TableSchema(std::vector<ColumnInfo> schema) : schema(schema) { }
 
-private:
-    std::string* schema_;
+    ~TableSchema() { }
+
+public:
+    const std::vector<ColumnInfo> schema;
 
 };
 
