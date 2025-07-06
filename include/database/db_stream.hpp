@@ -6,7 +6,8 @@
 #include <unordered_map>
 #include <stdexcept>
 #include <sstream>
-#include <data/db_table.hpp>
+#include "data/db_table.hpp"
+#include "sql/sql_formatter.hpp"
 
 namespace database {
 
@@ -25,8 +26,6 @@ public:
 
 private:
     void read_tables_names();
-    std::string format_create_expr(data::Table* table, bool ifNotExists);
-    std::string format_drop_expr(std::string table_name, bool ifExists);
 
 private:
     sqlite3* db_;

@@ -2,7 +2,8 @@
 #define _SQL_FORMATTER_HPP_
 
 #include <string>
-#include <../data/db_table.hpp>
+#include <sstream>
+#include "../data/db_table.hpp"
 
 namespace database::sql {
 

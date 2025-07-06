@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <exception>
-#include <db_column_info.hpp>
+#include "db_column_info.hpp"
 
 namespace database::data {
 

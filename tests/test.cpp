@@ -1,6 +1,6 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include <doctest/doctest.h>
-#include <database/db_stream.hpp>
+#include "doctest/doctest.h"
+#include "database/db_stream.hpp"
 
 
 TEST_SUITE("Database") {
@@ -22,7 +22,7 @@ TEST_SUITE("Database") {
     };
 
     TEST_CASE("DbStream") {
-        DbStreamTester* tester;
+        DbStreamTester* tester = nullptr;
         
         SUBCASE("Opening database") {
             CHECK_NOTHROW( 

@@ -1,4 +1,4 @@
-#include <db_stream.hpp>
+#include "database/db_stream.hpp"
 
 // namespace database
 
@@ -24,7 +24,7 @@ database::DbStream::~DbStream() {
 void database::DbStream::createTable(std::string table_name, data::TableSchema* schema, bool ifNotExists) {
     data::Table* new_table = new data::Table(table_name, schema);
 
-    std::string sql_expr = format_create_expr(new_table, ifNotExists);
+    std::string sql_expr = sql::SqlFormatter::format_create_expr(new_table, ifNotExists);
 
     int exec_result = sqlite3_exec(db_, sql_expr.c_str(), 0, 0, 0);
 
@@ -36,7 +36,7 @@ void database::DbStream::createTable(std::string table_name, data::TableSchema* 
 }
 
 void database::DbStream::dropTable(std::string table_name, bool ifExists) {
-    std::string sql_expr = format_drop_expr(table_name, ifExists);
+    std::string sql_expr = sql::SqlFormatter::format_drop_expr(table_name, ifExists);
 
     int exec_result = sqlite3_exec(db_, sql_expr.c_str(), 0, 0, 0);
 
@@ -78,50 +78,4 @@ void database::DbStream::read_tables_names() {
     }
     
     sqlite3_finalize(stmt);
-}
-
-std::string database::DbStream::format_create_expr(data::Table* table, bool ifNotExists) {
-    std::stringstream ss;
-    ss << "CREATE TABLE ";
-    if (ifNotExists) ss << "IF NOT EXISTS ";
-    ss << table->name << " (\n";
-
-    const auto& schema = table->schema->column_infos;
-
-    for ( size_t i = 0;i < schema.size(); ++i ) {
-        const auto& col = schema[i];
-
-        // Имя столбца и тип
-        ss << "    " << col.name << " " << col.type;
-        
-        // Обработка NULL/NOT NULL
-        if (!col.isNullable) {
-            ss << " NOT NULL";
-        }
-        
-        // Обработка значения по умолчанию
-        if (col.defValue.isSpecified) {
-            if (col.defValue.isNull) {
-                ss << " DEFAULT NULL";
-            } else {
-                ss << " DEFAULT " << col.defValue.value;
-            }
-        }
-        
-        // Запятая для всех, кроме последнего столбца
-        if (i < schema.size() - 1) 
-            ss << ",";
-        ss << "\n";
-    }
-    
-    ss << ");";
-    return ss.str();
-}
-
-std::string database::DbStream::format_drop_expr(std::string table_name, bool ifExists) {
-    std::stringstream ss;
-    ss << "DROP TABLE ";
-    if (ifExists) ss << "IF EXISTS ";
-    ss << table_name << " ";
-    return ss.str();
 }

@@ -2,7 +2,7 @@
 #define _TABLE_HPP_
 
 #include <string>
-#include <db_table_schema.hpp>
+#include "db_table_schema.hpp"
 
 namespace database::data {
 

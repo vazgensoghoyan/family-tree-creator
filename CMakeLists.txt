@@ -17,6 +17,7 @@ find_package(SQLite3 REQUIRED)
 # Исходные файлы
 set(SRC_FILES
     src/db_stream.cpp
+    src/sql_formatter.cpp
 )
 
 # Исполняемый файл
