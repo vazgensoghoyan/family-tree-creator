@@ -4,7 +4,7 @@
 #include <string>
 #include <db_table_schema.hpp>
 
-namespace database {
+namespace database::data {
 
 class Table {
     

@@ -21,8 +21,8 @@ database::DbStream::~DbStream() {
     sqlite3_close(db_);
 }
 
-void database::DbStream::createTable(std::string table_name, TableSchema* schema, bool ifNotExists) {
-    Table* new_table = new Table(table_name, schema);
+void database::DbStream::createTable(std::string table_name, data::TableSchema* schema, bool ifNotExists) {
+    data::Table* new_table = new data::Table(table_name, schema);
 
     std::string sql_expr = format_create_expr(new_table, ifNotExists);
 
@@ -47,9 +47,11 @@ void database::DbStream::dropTable(std::string table_name, bool ifExists) {
     tables_.erase(table_name);
 }
 
-const database::Table* database::DbStream::get_table(std::string table_name) const {
+const database::data::Table* database::DbStream::get_table(std::string table_name) const {
 
     // TODO
+
+    return tables_.at(table_name);
 
 }
 
@@ -68,7 +70,7 @@ void database::DbStream::read_tables_names() {
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         const unsigned char* txt = sqlite3_column_text(stmt, 0);
 
-        const char* table_name = reinterpret_cast<const char*>(table_name);
+        const char* table_name = reinterpret_cast<const char*>(txt);
 
         if (table_name) {
             tables_.insert({ std::string(table_name), nullptr });
@@ -78,7 +80,7 @@ void database::DbStream::read_tables_names() {
     sqlite3_finalize(stmt);
 }
 
-std::string database::DbStream::format_create_expr(Table* table, bool ifNotExists) {
+std::string database::DbStream::format_create_expr(data::Table* table, bool ifNotExists) {
     std::stringstream ss;
     ss << "CREATE TABLE ";
     if (ifNotExists) ss << "IF NOT EXISTS ";

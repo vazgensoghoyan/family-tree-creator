@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace database {
+namespace database::data {
 
 class ColumnInfo {
 

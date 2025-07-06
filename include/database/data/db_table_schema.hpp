@@ -5,7 +5,7 @@
 #include <exception>
 #include <db_column_info.hpp>
 
-namespace database {
+namespace database::data {
 
 class TableSchema {
 
