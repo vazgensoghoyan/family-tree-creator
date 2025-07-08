@@ -2,6 +2,7 @@
 #include "doctest/doctest.h"
 #include "database/db_stream.hpp"
 #include <vector>
+#include <filesystem>
 
 
 TEST_SUITE("Database") {
@@ -17,27 +18,68 @@ TEST_SUITE("Database") {
             delete stream_;
         }
 
+        void createTable(std::string table_name, database::data::TableSchema* schema, bool ifNotExists = false) {
+            stream_->createTable(table_name, schema, ifNotExists);
+        }
+
+        void createTestTable(bool ifNotExists) {
+            createTable(
+                "test_table", 
+                new database::data::TableSchema{ {
+                        { "c1", "boolean", false, true, {false, false, ""} },
+                        { "c2", "integer", false, true, {false, false, ""} },
+                        { "c3", "float", false, true, {false, false, ""} },
+                        { "c4", "string", false, true, {false, false, ""} }
+                    } },
+                ifNotExists 
+            );
+        }
+
+        void dropTable(std::string table_name, bool ifExists = false) {
+            stream_->dropTable(table_name, ifExists);
+        }
+
     private:
         database::DbStream* stream_;
 
     };
 
     TEST_CASE("DbStream") {
-        DbStreamTester* tester = nullptr;
+
+        // clearing test.db before TEST_CASE once
+        static bool db_cleaned = false;
+        if (!db_cleaned) {
+            std::error_code ec;
+            std::filesystem::remove("test.db", ec);
+            db_cleaned = true;
+        }
         
-        SUBCASE("Opening database") {
-            CHECK_NOTHROW( 
-                tester = new DbStreamTester( "test.db" );
-            );
+        // creating tester (its created before every SUBCASE)
+        DbStreamTester tester("test.db");
+        
+        SUBCASE("Opening and closing database") {
+            // already done, because tester is created before every SUBCASE
         }
 
         SUBCASE("Create table") {
-        }
-        
-        SUBCASE("Closing database") {
             CHECK_NOTHROW(
-                delete tester;
+                tester.createTestTable(false);
             );
+        }
+
+        SUBCASE("Create same table without 'if not exists' (should throw error)") {
+            CHECK_THROWS_AS(
+                tester.createTestTable(false),
+                std::runtime_error
+            );
+        }
+
+        SUBCASE("Create same table without 'if not exists' (should throw error)") {
+            SUBCASE("Create table") {
+                CHECK_NOTHROW(
+                    tester.createTestTable(true);
+                );
+            }
         }
         
     }
@@ -99,7 +141,7 @@ TEST_SUITE("Database") {
             std::string result, expected;
             
             result = f::format_drop_expr( "some_table_name", false );
-            expected = "DROP TABLE t1";
+            expected = "DROP TABLE some_table_name";
             CHECK( result == expected );
         }
 
@@ -112,35 +154,33 @@ TEST_SUITE("Database") {
         }
 
     }
-    
-    TEST_CASE("Table") {
 
-        SUBCASE("") {
-            
-        }
-    }
-    
-    TEST_CASE("TableSchema") {
-
-        SUBCASE("") {
-            
-        }
-    }
-    
 }
 
+TEST_SUITE("doctest") {
 
-TEST_SUITE("") {
+    struct Tracer {
+        const char* name;
+        Tracer(const char* n) : name(n) { std::cout << "Construct " << name << "\n"; }
+        ~Tracer() { std::cout << "Destruct " << name << "\n"; }
+    };
 
-    TEST_CASE("") {
-
-        SUBCASE("") {
-            
+    TEST_CASE("Lifecycle Demo") {
+        Tracer outer("outer");  // Вне SUBCASE
+        
+        std::cout << "--- Before SUBCASE ---\n";
+        
+        SUBCASE("First") {
+            Tracer inner("inner");
+            std::cout << "Inside FIRST SUBCASE\n";
         }
-
-        SUBCASE("") {
-            
+        
+        SUBCASE("Second") {
+            Tracer inner("inner");
+            std::cout << "Inside SECOND SUBCASE\n";
         }
+        
+        std::cout << "--- After SUBCASE ---\n";
     }
 
 }

@@ -47,6 +47,14 @@ void database::DbStream::dropTable(std::string table_name, bool ifExists) {
     tables_.erase(table_name);
 }
 
+
+std::vector<std::string> database::DbStream::get_table_names() const {
+    std::vector<std::string> names;
+    for ( const auto& pr : tables_ )
+        names.push_back( pr.first );
+    return names;
+}
+
 const database::data::Table* database::DbStream::get_table(std::string table_name) const {
 
     // TODO

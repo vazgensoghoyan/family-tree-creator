@@ -41,6 +41,6 @@ std::string database::sql::SqlFormatter::format_drop_expr(std::string table_name
     std::stringstream ss;
     ss << "DROP TABLE ";
     if (ifExists) ss << "IF EXISTS ";
-    ss << table_name << " ";
+    ss << table_name;
     return ss.str();
 }
