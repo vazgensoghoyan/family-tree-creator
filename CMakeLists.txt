@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.13)
 project(family_tree)
 
+# Включаем поддержку тестирования
+enable_testing()
 
 # Настройки компилятора
 set(CMAKE_CXX_STANDARD 17)
@@ -9,7 +11,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Флаги компиляции
 add_compile_options(-Wall -Wextra -Werror -O2)
-
 
 # Ищем библиотеку SQLite3
 find_package(SQLite3 REQUIRED)
@@ -39,3 +40,6 @@ target_include_directories(${PROJECT_NAME}_tests PRIVATE include)
 # Линкуем с SQLite3
 target_link_libraries(${PROJECT_NAME} PRIVATE SQLite::SQLite3)
 target_link_libraries(${PROJECT_NAME}_tests PRIVATE SQLite::SQLite3)
+
+# Регистрируем тесты в CTest
+add_test(NAME ${PROJECT_NAME}_tests COMMAND ${PROJECT_NAME}_tests)
