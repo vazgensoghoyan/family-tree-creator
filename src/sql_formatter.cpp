@@ -8,7 +8,7 @@ std::string database::sql::SqlFormatter::format_create_expr(data::Table* table, 
     if (ifNotExists) ss << "IF NOT EXISTS ";
     ss << table->name << " (";
 
-    const auto& schema = table->schema->column_infos;
+    const auto& schema = table->schema.column_infos;
 
     for ( size_t i = 0;i < schema.size(); ++i ) {
         const auto& col = schema[i];

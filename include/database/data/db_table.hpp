@@ -9,18 +9,17 @@ namespace database::data {
 class Table {
     
 public:
-    Table(std::string name, TableSchema* schema) : name(name), schema(schema) { }
+    Table(std::string name, const TableSchema& schema);
+    Table(std::string name, TableSchema&& schema);
     
-    ~Table() { }
+    ~Table();
 
-    void insertValues(std::string* row);
-
-    const auto& getValues() const { return rows; }
+    std::string getName() const;
+    const TableSchema& getSchema() const;
 
 public:
     const std::string name;
-    const TableSchema* schema;
-    const std::vector<std::vector<std::string>> rows;
+    const TableSchema schema;
 
 };
 

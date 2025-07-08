@@ -41,7 +41,7 @@ public:
     void dropTable(std::string table_name, bool ifExists = false);
 
     std::vector<std::string> get_table_names() const;
-    const data::Table* get_table(std::string table_name) const;
+    const data::Table& get_table(std::string table_name) const;
 
     friend class DbStreamTester;
 

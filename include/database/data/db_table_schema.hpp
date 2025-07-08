@@ -10,7 +10,8 @@ namespace database::data {
 class TableSchema {
 
 public:
-    TableSchema(std::vector<ColumnInfo> columns) : column_infos(columns) { }
+    TableSchema(const std::vector<ColumnInfo>& columns) : column_infos(columns) { }
+    TableSchema(std::vector<ColumnInfo>&& columns) : column_infos(std::move(columns)) { }
 
     ~TableSchema() { }
 

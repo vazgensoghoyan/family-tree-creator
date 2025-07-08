@@ -22,7 +22,7 @@ database::DbStream::~DbStream() {
 }
 
 void database::DbStream::createTable(std::string table_name, data::TableSchema* schema, bool ifNotExists) {
-    data::Table* new_table = new data::Table(table_name, schema);
+    data::Table* new_table = new data::Table(table_name, *schema);
 
     std::string sql_expr = sql::SqlFormatter::format_create_expr(new_table, ifNotExists);
 
@@ -47,7 +47,6 @@ void database::DbStream::dropTable(std::string table_name, bool ifExists) {
     tables_.erase(table_name);
 }
 
-
 std::vector<std::string> database::DbStream::get_table_names() const {
     std::vector<std::string> names;
     for ( const auto& pr : tables_ )
@@ -55,11 +54,14 @@ std::vector<std::string> database::DbStream::get_table_names() const {
     return names;
 }
 
-const database::data::Table* database::DbStream::get_table(std::string table_name) const {
+const database::data::Table& database::DbStream::get_table(std::string table_name) const {
+    if ( tables_.at(table_name) != nullptr ) {
+        return *tables_.at(table_name);
+    }
 
-    // TODO
+    
 
-    return tables_.at(table_name);
+    return *tables_.at("");
 
 }
 

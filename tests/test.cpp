@@ -93,7 +93,7 @@ TEST_SUITE("Database") {
 
             auto table = new database::data::Table{
                 "t1",
-                new database::data::TableSchema{
+                database::data::TableSchema{
                     { 
                         { "c1", "boolean", false, true, {false, false, ""} },
                         { "c2", "integer", false, true, {false, false, ""} },
@@ -119,7 +119,7 @@ TEST_SUITE("Database") {
 
             auto table = new database::data::Table{
                 "students",
-                new database::data::TableSchema{
+                database::data::TableSchema{
                     { 
                         { "id", "SERIAL", true, false, {false, false, ""} },
                         { "first_name", "STRING", false, false, {false, false, ""} },
@@ -149,7 +149,7 @@ TEST_SUITE("Database") {
             std::string result, expected;
             
             result = f::format_drop_expr( "helloWorld", true );
-            expected = "DROP TABLE IF EXISTS helloWorld  ";
+            expected = "DROP TABLE IF EXISTS helloWorld";
             CHECK( result == expected );
         }
 
