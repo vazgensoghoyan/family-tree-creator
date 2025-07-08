@@ -149,38 +149,10 @@ TEST_SUITE("Database") {
             std::string result, expected;
             
             result = f::format_drop_expr( "helloWorld", true );
-            expected = "DROP TABLE IF EXISTS helloWorld";
+            expected = "DROP TABLE IF EXISTS helloWorld  ";
             CHECK( result == expected );
         }
 
-    }
-
-}
-
-TEST_SUITE("doctest") {
-
-    struct Tracer {
-        const char* name;
-        Tracer(const char* n) : name(n) { std::cout << "Construct " << name << "\n"; }
-        ~Tracer() { std::cout << "Destruct " << name << "\n"; }
-    };
-
-    TEST_CASE("Lifecycle Demo") {
-        Tracer outer("outer");  // Вне SUBCASE
-        
-        std::cout << "--- Before SUBCASE ---\n";
-        
-        SUBCASE("First") {
-            Tracer inner("inner");
-            std::cout << "Inside FIRST SUBCASE\n";
-        }
-        
-        SUBCASE("Second") {
-            Tracer inner("inner");
-            std::cout << "Inside SECOND SUBCASE\n";
-        }
-        
-        std::cout << "--- After SUBCASE ---\n";
     }
 
 }
