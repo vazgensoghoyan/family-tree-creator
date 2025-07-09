@@ -9,11 +9,15 @@ project_data::PersonDb& project_data::PersonDb::instance() {
     return personDb;
 }
 
-void project_data::PersonDb::addPerson(const std::string& name) {
+void project_data::PersonDb::addPerson(const Person& person) {
     stream_.insertInto(
         tableName_,
-        { "id", "name" },
-        { { std::to_string(current_id_++), name } }
+        { "full_name", "birth_date", "bio" },
+        { { 
+            person.getFullName(),
+            person.getBirthDate(),
+            person.getBio()
+        } }
     );
 }
 
@@ -24,10 +28,12 @@ project_data::PersonDb::PersonDb() : stream_{"persons.db"}, tableName_{"persons"
         tableName_,
         database::data::TableSchema {
             {
-                database::data::ColumnInfo{ "id", "INTEGER AUTO_INCREMENT", true, false },
-                database::data::ColumnInfo{ "name", "TEXT", false, true }
-                //database::data::ColumnInfo{ "father", "INTEGER" },
-                //database::data::ColumnInfo{ "mother", "INTEGER" }
+                database::data::ColumnInfo{ "id", "INTEGER", true, false },
+                database::data::ColumnInfo{ "full_name", "TEXT", false, true },
+                database::data::ColumnInfo{ "birth_date", "DATE" },
+                database::data::ColumnInfo{ "bio", "TEXT" },
+                database::data::ColumnInfo{ "father_id", "INTEGER" },
+                database::data::ColumnInfo{ "mother_id", "INTEGER" },
             }
         },
         true

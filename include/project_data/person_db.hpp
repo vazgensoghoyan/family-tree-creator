@@ -2,6 +2,7 @@
 #define _PERSON_DB_HPP_
 
 #include "../database/db_stream.hpp"
+#include "person.hpp"
 #include <string>
 
 namespace project_data {
@@ -14,7 +15,7 @@ public:
     PersonDb(const PersonDb&) = delete;
     PersonDb& operator=(const PersonDb&) = delete;
 
-    void addPerson(const std::string& name);
+    void addPerson(const Person& person);
 
 private:
     PersonDb();
@@ -23,7 +24,7 @@ private:
 private:
     database::DbStream stream_;
     std::string tableName_;
-    size_t current_id_;
+    
 };
     
 }

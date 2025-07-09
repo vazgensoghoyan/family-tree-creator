@@ -1,11 +1,19 @@
 #include "project_data/person_db.hpp"
+#include "project_data/person_builder.hpp"
+
+using namespace project_data;
 
 int main() {
-    auto& db = project_data::PersonDb::instance();
+    auto& db = PersonDb::instance();
 
-    db.addPerson("name1");
-    db.addPerson("mike");
-    db.addPerson("hithere");
+    db.addPerson(
+        PersonBuilder()
+            .setFullName("mike")
+            .setBio("goodboy")
+            .setBirhtDate("09.02.1974")
+            .setFatherByID(13)
+            .build()
+    );
 
     return 0;
 }
