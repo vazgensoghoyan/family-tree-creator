@@ -15,23 +15,17 @@ add_compile_options(-Wall -Wextra -Werror -O2)
 # Ищем библиотеку SQLite3
 find_package(SQLite3 REQUIRED)
 
-# Исходные файлы
-set(SRC_FILES
-    src/db_stream.cpp
-    src/sql_formatter.cpp
-)
+# Автоматически собираем все исходные файлы из src (кроме main.cpp)
+file(GLOB LIB_SRC_FILES CONFIGURE_DEPENDS "src/*.cpp")
+list(REMOVE_ITEM LIB_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 
-
-# Исполняемый файл
-add_executable(${PROJECT_NAME}
+# Главный исполняемый файл (с main.cpp)
+add_executable(${PROJECT_NAME} 
     src/main.cpp
-    ${SRC_FILES}
+    ${LIB_SRC_FILES}
 )
 
-# Директории с заголовками
 target_include_directories(${PROJECT_NAME} PRIVATE include)
-
-# Линкуем с SQLite3
 target_link_libraries(${PROJECT_NAME} PRIVATE SQLite::SQLite3)
 
 
@@ -40,25 +34,24 @@ include(FetchContent)
 FetchContent_Declare(
     doctest
     GIT_REPOSITORY https://github.com/doctest/doctest.git
-    GIT_TAG v2.4.11  # Укажите актуальную версию
+    GIT_TAG v2.4.11
 )
 FetchContent_MakeAvailable(doctest)
 
+
 # Автоматическая регистрация тестов
-file(GLOB TEST_SOURCES CONFIGURE_DEPENDS "tests/*.cpp")  # Автообновление списка
+file(GLOB TEST_SOURCES CONFIGURE_DEPENDS "tests/*.cpp")
 
 foreach(TEST_SOURCE ${TEST_SOURCES})
-    # Извлекаем имя теста без расширения (например, test_sql_formatter)
     get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
     
-    # Создаем исполняемый файл теста
-    add_executable(${TEST_NAME} ${TEST_SOURCE} ${SRC_FILES})
-    
-    # Настройка для теста
+    add_executable(${TEST_NAME} 
+        ${TEST_SOURCE}
+        ${LIB_SRC_FILES}
+    )
+
     target_include_directories(${TEST_NAME} PRIVATE include)
-    target_link_libraries(${TEST_NAME} PRIVATE SQLite::SQLite3)
-    target_link_libraries(${TEST_NAME} PRIVATE doctest)
-    
-    # Регистрируем тест в CTest
+    target_link_libraries(${TEST_NAME} PRIVATE SQLite::SQLite3 doctest)
+
     add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
 endforeach()
