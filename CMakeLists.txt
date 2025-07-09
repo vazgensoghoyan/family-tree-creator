@@ -21,32 +21,34 @@ set(SRC_FILES
     src/sql_formatter.cpp
 )
 
+
 # Исполняемый файл
 add_executable(${PROJECT_NAME}
     src/main.cpp
     ${SRC_FILES}
 )
 
-# Тестовые исполняемые файлы
-add_executable(test_sql_formatter
-    tests/test_sql_formatter.cpp
-    ${SRC_FILES}
-)
-add_executable(test_db_stream
-    tests/test_db_stream.cpp
-    ${SRC_FILES}
-)
-
 # Директории с заголовками
 target_include_directories(${PROJECT_NAME} PRIVATE include)
-target_include_directories(test_sql_formatter PRIVATE include)
-target_include_directories(test_db_stream PRIVATE include)
 
 # Линкуем с SQLite3
 target_link_libraries(${PROJECT_NAME} PRIVATE SQLite::SQLite3)
-target_link_libraries(test_sql_formatter PRIVATE SQLite::SQLite3)
-target_link_libraries(test_db_stream PRIVATE SQLite::SQLite3)
 
-# Регистрируем тесты в CTest
-add_test(NAME test_sql_formatter COMMAND test_sql_formatter)
-add_test(NAME test_db_stream COMMAND test_db_stream)
+
+# Автоматическая регистрация тестов
+file(GLOB TEST_SOURCES CONFIGURE_DEPENDS "tests/*.cpp")  # Автообновление списка
+
+foreach(TEST_SOURCE ${TEST_SOURCES})
+    # Извлекаем имя теста без расширения (например, test_sql_formatter)
+    get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
+    
+    # Создаем исполняемый файл теста
+    add_executable(${TEST_NAME} ${TEST_SOURCE} ${SRC_FILES})
+    
+    # Настройка для теста
+    target_include_directories(${TEST_NAME} PRIVATE include)
+    target_link_libraries(${TEST_NAME} PRIVATE SQLite::SQLite3)
+    
+    # Регистрируем тест в CTest
+    add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+endforeach()
