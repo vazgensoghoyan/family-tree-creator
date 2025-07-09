@@ -21,6 +21,8 @@ database::DbStream::~DbStream() {
     sqlite3_close(db_);
 }
 
+// sql commands
+
 void database::DbStream::createTable(const std::string& table_name, const data::TableSchema& schema, bool ifNotExists) {
     data::Table* new_table = new data::Table(table_name, schema);
 
@@ -29,7 +31,7 @@ void database::DbStream::createTable(const std::string& table_name, const data::
     int exec_result = sqlite3_exec(db_, sql_expr.c_str(), 0, 0, 0);
 
     if ( exec_result != SQLITE_OK ) {
-        throw std::runtime_error("Ошибка создания таблицы");
+        throw std::runtime_error("Error creating table");
     }
 
     tables_.insert( {table_name, new_table} );
@@ -41,11 +43,28 @@ void database::DbStream::dropTable(const std::string& table_name, bool ifExists)
     int exec_result = sqlite3_exec(db_, sql_expr.c_str(), 0, 0, 0);
 
     if ( exec_result != SQLITE_OK ) {
-        throw std::runtime_error("Ошибка удаления таблицы");
+        throw std::runtime_error("Error dropping table");
     }
 
     tables_.erase(table_name);
 }
+
+void database::DbStream::insertInto(
+    const std::string& table_name, 
+    const std::vector<std::string>& column_names, 
+    const std::vector<std::vector<std::string>>& values
+) {
+    std::string sql_expr = sql::SqlFormatter::format_insert_expr(table_name, column_names, values);
+
+    int exec_result = sqlite3_exec(db_, sql_expr.c_str(), 0, 0, 0);
+
+    if ( exec_result != SQLITE_OK ) {
+        throw std::runtime_error("Error inserting values to table");
+    }
+}
+
+
+// getters
 
 std::vector<std::string> database::DbStream::get_table_names() const {
     std::vector<std::string> names;

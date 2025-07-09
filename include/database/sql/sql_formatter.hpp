@@ -60,6 +60,12 @@ public:
     static std::string format_create_expr(const data::Table& table, bool ifNotExists);
     static std::string format_drop_expr(const std::string& table_name, bool ifExists);
 
+    static std::string format_insert_expr(
+        const std::string& table_name, 
+        const std::vector<std::string>& column_names, 
+        const std::vector<std::vector<std::string>>& values
+    );
+
 };
 
 }

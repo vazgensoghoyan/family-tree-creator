@@ -12,9 +12,17 @@ public:
     class DefaultValue {
 
     public:
-        DefaultValue(bool isSpecified, bool isNull, std::string value)
-        : isSpecified(isSpecified), isNull(isNull), value(std::move(value)) { }
+        static DefaultValue NotSpecified() {
+            return DefaultValue{ false, false, "" };
+        }
 
+        static DefaultValue Specified(std::string value) {
+            return DefaultValue{ true, false, std::move(value) };
+        }
+
+        static DefaultValue Null() {
+            return DefaultValue{ true, true, "" };
+        }
 
         DefaultValue(const DefaultValue&) = default;
         DefaultValue(DefaultValue&&) noexcept = default;
@@ -24,6 +32,10 @@ public:
 
         ~DefaultValue() = default;
 
+    private:
+        DefaultValue(bool isSpecified, bool isNull, std::string value)
+        : isSpecified(isSpecified), isNull(isNull), value(std::move(value)) { }
+
     public:
         const bool isSpecified;
         const bool isNull;
@@ -32,8 +44,24 @@ public:
     };
 
 public:
-    ColumnInfo(std::string name, std::string type, bool isPKey, bool isNullable, DefaultValue defValue)
-    : name(std::move(name)), type(std::move(type)), isPKey(isPKey), isNullable(isNullable), defValue(defValue) { }
+    ColumnInfo(
+        std::string name, 
+        std::string type, 
+        bool isPKey = false, 
+        bool isNullable = true
+    )
+    : ColumnInfo(std::move(name), std::move(type), isPKey, isNullable, DefaultValue::NotSpecified() )
+    { }
+
+    ColumnInfo(
+        std::string name, 
+        std::string type, 
+        bool isPKey, 
+        bool isNullable, 
+        DefaultValue defValue
+    )
+    : name(std::move(name)), type(std::move(type)), isPKey(isPKey), isNullable(isNullable), defValue(std::move(defValue))
+    { }
     
     ColumnInfo(const ColumnInfo&) = default;
     ColumnInfo(ColumnInfo&&) noexcept = default;

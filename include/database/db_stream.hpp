@@ -40,6 +40,12 @@ public:
     void createTable(const std::string& table_name, const data::TableSchema& schema, bool ifNotExists = false);
     void dropTable(const std::string& table_name, bool ifExists = false);
 
+    void insertInto(
+        const std::string& table_name, 
+        const std::vector<std::string>& column_names, 
+        const std::vector<std::vector<std::string>>& values
+    );
+
     std::vector<std::string> get_table_names() const;
     const data::Table& get_table(const std::string& table_name) const;
 
