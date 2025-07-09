@@ -4,6 +4,7 @@
 #include <vector>
 #include <filesystem>
 
+using namespace database;
 
 TEST_SUITE("Database") {
 
@@ -11,26 +12,26 @@ TEST_SUITE("Database") {
 
     public:
         DbStreamTester( std::string db_name ) {
-            stream_ = new database::DbStream( db_name );
+            stream_ = new DbStream( db_name );
         }
 
         ~DbStreamTester() {
             delete stream_;
         }
 
-        void createTable(std::string table_name, database::data::TableSchema* schema, bool ifNotExists = false) {
+        void createTable(std::string table_name, const data::TableSchema& schema, bool ifNotExists = false) {
             stream_->createTable(table_name, schema, ifNotExists);
         }
 
         void createTestTable(bool ifNotExists) {
             createTable(
                 "test_table", 
-                new database::data::TableSchema{ {
-                        { "c1", "boolean", false, true, {false, false, ""} },
-                        { "c2", "integer", false, true, {false, false, ""} },
-                        { "c3", "float", false, true, {false, false, ""} },
-                        { "c4", "string", false, true, {false, false, ""} }
-                    } },
+                data::TableSchema{ {
+                    { "c1", "boolean", false, true, {false, false, ""} },
+                    { "c2", "integer", false, true, {false, false, ""} },
+                    { "c3", "float", false, true, {false, false, ""} },
+                    { "c4", "string", false, true, {false, false, ""} }
+                } },
                 ifNotExists 
             );
         }
@@ -40,7 +41,7 @@ TEST_SUITE("Database") {
         }
 
     private:
-        database::DbStream* stream_;
+        DbStream* stream_;
 
     };
 
@@ -86,14 +87,14 @@ TEST_SUITE("Database") {
     
     TEST_CASE("SqlFormatter") {
         
-        using f = database::sql::SqlFormatter;
+        using f = sql::SqlFormatter;
 
         SUBCASE("Create test 1") {
             std::string result, expected;
 
-            auto table = new database::data::Table{
+            data::Table table {
                 "t1",
-                database::data::TableSchema{
+                data::TableSchema{
                     { 
                         { "c1", "boolean", false, true, {false, false, ""} },
                         { "c2", "integer", false, true, {false, false, ""} },
@@ -110,16 +111,14 @@ TEST_SUITE("Database") {
             result = f::format_create_expr( table, true );
             expected = "CREATE TABLE IF NOT EXISTS t1 (c1 boolean, c2 integer, c3 float, c4 string);";
             CHECK( result == expected );
-
-            delete table;
         }
 
         SUBCASE("Create test 2") {
             std::string result, expected;
 
-            auto table = new database::data::Table{
+            data::Table table = {
                 "students",
-                database::data::TableSchema{
+                data::TableSchema{
                     { 
                         { "id", "SERIAL", true, false, {false, false, ""} },
                         { "first_name", "STRING", false, false, {false, false, ""} },
@@ -133,8 +132,6 @@ TEST_SUITE("Database") {
             result = f::format_create_expr( table, false );
             expected = "CREATE TABLE students (id SERIAL PRIMARY KEY, first_name STRING NOT NULL, middle_name STRING DEFAULT NULL, last_name STRING NOT NULL, score INTEGER NOT NULL DEFAULT 0);";
             CHECK( result == expected );
-
-            delete table;
         }
 
         SUBCASE("Drop test 1") {

@@ -21,10 +21,10 @@ database::DbStream::~DbStream() {
     sqlite3_close(db_);
 }
 
-void database::DbStream::createTable(std::string table_name, data::TableSchema* schema, bool ifNotExists) {
-    data::Table* new_table = new data::Table(table_name, *schema);
+void database::DbStream::createTable(const std::string& table_name, const data::TableSchema& schema, bool ifNotExists) {
+    data::Table* new_table = new data::Table(table_name, schema);
 
-    std::string sql_expr = sql::SqlFormatter::format_create_expr(new_table, ifNotExists);
+    std::string sql_expr = sql::SqlFormatter::format_create_expr(*new_table, ifNotExists);
 
     int exec_result = sqlite3_exec(db_, sql_expr.c_str(), 0, 0, 0);
 
@@ -35,7 +35,7 @@ void database::DbStream::createTable(std::string table_name, data::TableSchema* 
     tables_.insert( {table_name, new_table} );
 }
 
-void database::DbStream::dropTable(std::string table_name, bool ifExists) {
+void database::DbStream::dropTable(const std::string& table_name, bool ifExists) {
     std::string sql_expr = sql::SqlFormatter::format_drop_expr(table_name, ifExists);
 
     int exec_result = sqlite3_exec(db_, sql_expr.c_str(), 0, 0, 0);
@@ -54,12 +54,12 @@ std::vector<std::string> database::DbStream::get_table_names() const {
     return names;
 }
 
-const database::data::Table& database::DbStream::get_table(std::string table_name) const {
+const database::data::Table& database::DbStream::get_table(const std::string& table_name) const {
     if ( tables_.at(table_name) != nullptr ) {
         return *tables_.at(table_name);
     }
 
-    
+    // TODO
 
     return *tables_.at("");
 

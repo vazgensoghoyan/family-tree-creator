@@ -2,13 +2,13 @@
 
 // namespace database::sql
 
-std::string database::sql::SqlFormatter::format_create_expr(data::Table* table, bool ifNotExists) {
+std::string database::sql::SqlFormatter::format_create_expr(const data::Table& table, bool ifNotExists) {
     std::stringstream ss;
     ss << "CREATE TABLE ";
     if (ifNotExists) ss << "IF NOT EXISTS ";
-    ss << table->name << " (";
+    ss << table.name << " (";
 
-    const auto& schema = table->schema.column_infos;
+    const auto& schema = table.schema.column_infos;
 
     for ( size_t i = 0;i < schema.size(); ++i ) {
         const auto& col = schema[i];
@@ -37,7 +37,7 @@ std::string database::sql::SqlFormatter::format_create_expr(data::Table* table, 
     return ss.str();
 }
 
-std::string database::sql::SqlFormatter::format_drop_expr(std::string table_name, bool ifExists) {
+std::string database::sql::SqlFormatter::format_drop_expr(const std::string& table_name, bool ifExists) {
     std::stringstream ss;
     ss << "DROP TABLE ";
     if (ifExists) ss << "IF EXISTS ";

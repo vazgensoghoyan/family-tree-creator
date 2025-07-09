@@ -57,8 +57,8 @@ public:
     SqlFormatter() = delete;
     ~SqlFormatter() = delete;
 
-    static std::string format_create_expr(data::Table* table, bool ifNotExists);
-    static std::string format_drop_expr(std::string table_name, bool ifExists);
+    static std::string format_create_expr(const data::Table& table, bool ifNotExists);
+    static std::string format_drop_expr(const std::string& table_name, bool ifExists);
 
 };
 

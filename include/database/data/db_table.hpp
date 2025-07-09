@@ -9,13 +9,15 @@ namespace database::data {
 class Table {
     
 public:
-    Table(std::string name, const TableSchema& schema);
-    Table(std::string name, TableSchema&& schema);
-    
-    ~Table();
+    Table(std::string name, TableSchema schema) : name(std::move(name)), schema(std::move(schema)) { }
 
-    std::string getName() const;
-    const TableSchema& getSchema() const;
+    Table(const Table&) = default;
+    Table(Table&&) noexcept = default;
+
+    Table& operator=(const Table&) = default;
+    Table& operator=(Table&&) noexcept = default;
+
+    ~Table() = default;
 
 public:
     const std::string name;

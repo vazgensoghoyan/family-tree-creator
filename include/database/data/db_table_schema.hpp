@@ -10,10 +10,15 @@ namespace database::data {
 class TableSchema {
 
 public:
-    TableSchema(const std::vector<ColumnInfo>& columns) : column_infos(columns) { }
-    TableSchema(std::vector<ColumnInfo>&& columns) : column_infos(std::move(columns)) { }
+    TableSchema(std::vector<ColumnInfo> columns) : column_infos(std::move(columns)) { }
 
-    ~TableSchema() { }
+    TableSchema(const TableSchema&) = default;
+    TableSchema(TableSchema&&) noexcept = default;
+
+    TableSchema& operator=(const TableSchema&) = default;
+    TableSchema& operator=(TableSchema&&) noexcept = default;
+
+    ~TableSchema() = default;
 
 public:
     const std::vector<ColumnInfo> column_infos;
