@@ -35,6 +35,15 @@ target_include_directories(${PROJECT_NAME} PRIVATE include)
 target_link_libraries(${PROJECT_NAME} PRIVATE SQLite::SQLite3)
 
 
+# Загрузка doctest через FetchContent
+include(FetchContent)
+FetchContent_Declare(
+    doctest
+    GIT_REPOSITORY https://github.com/doctest/doctest.git
+    GIT_TAG v2.4.11  # Укажите актуальную версию
+)
+FetchContent_MakeAvailable(doctest)
+
 # Автоматическая регистрация тестов
 file(GLOB TEST_SOURCES CONFIGURE_DEPENDS "tests/*.cpp")  # Автообновление списка
 
@@ -48,6 +57,7 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
     # Настройка для теста
     target_include_directories(${TEST_NAME} PRIVATE include)
     target_link_libraries(${TEST_NAME} PRIVATE SQLite::SQLite3)
+    target_link_libraries(${TEST_NAME} PRIVATE doctest)
     
     # Регистрируем тест в CTest
     add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
